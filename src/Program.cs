@@ -15,9 +15,9 @@ namespace Benchmarks
             //{
             //    Test(db, 10000);
             //}
-            Insert(db, 500000);
+            Insert(db, 5000);
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 20; i++)
             {
                 Search(db, alphabet[rng.Next(alphabet.Length)].ToString(), 1000);
             }

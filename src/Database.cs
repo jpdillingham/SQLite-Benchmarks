@@ -16,7 +16,7 @@ namespace Benchmarks
 
         public SqliteConnection GetConnection(string? connectionString = null)
         {
-            var conn = new SqliteConnection(connectionString ?? "Data Source=file:db?mode=memory");
+            var conn = new SqliteConnection(connectionString ?? "Data Source=foo.db");
             conn.Open();
             return conn;
         }
@@ -27,8 +27,10 @@ namespace Benchmarks
                 "INNER JOIN data ON idx.id = data.id " +
                 $"WHERE idx MATCH '({query})' ORDER BY name ASC;";
 
+            // var sql = $"SELECT name FROM data WHERE ROWID IN (SELECT ROWID FROM idx WHERE idx MATCH '({query})');";
+
             var results = new List<string>();
-            
+
             using var conn = GetConnection();
             using var cmd = new SqliteCommand(sql, conn);
             var reader = cmd.ExecuteReader();
@@ -48,6 +50,9 @@ namespace Benchmarks
 
             conn.ExecuteNonQuery("DROP TABLE IF EXISTS idx; CREATE VIRTUAL TABLE idx USING fts5(id);");
             conn.ExecuteNonQuery("DROP TABLE IF EXISTS data; CREATE TABLE data (id TEXT PRIMARY KEY, name TEXT NOT NULL);");
+
+            // conn.ExecuteNonQuery("DROP TABLE IF EXISTS data; CREATE TABLE data (id TEXT PRIMARY KEY, name TEXT NOT NULL);");
+            // conn.ExecuteNonQuery("DROP TABLE IF EXISTS idx; CREATE VIRTUAL TABLE idx USING fts5(id, content=data, content_rowid=id);");
         }
 
         public void Insert()
