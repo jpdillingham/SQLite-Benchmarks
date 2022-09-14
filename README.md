@@ -140,3 +140,28 @@ Searched 1000 times in 199ms, 5025.125628140703ps
 ```
 
 The performance difference is negligible, but the join method is slightly faster both in memory and on disk.  Furthermore, not using the `content` construct when creating the FTS5 table makes the tables more resilient to changes, as changing the column designated as `content_rowid` will result in a corrupted database.
+
+# Sort Performance
+
+I want to prove (I already kind of know) that sorting results by including an `ORDER BY` predicate in the query is faster than fetching results and sorting in memory.
+
+The initial results were very close, so I tweaked the code to run 1000 times and average the results.
+
+With an in-memory database:
+
+memory:
+
+```
+orderby: Average: 16101.471559777603, Min: 10638.297872340425, Max: 18518.51851851852
+sqlite: Average: 15239.487507936838, Min: 7751.937984496124, Max: 17857.142857142855
+```
+
+
+On disk (and with a lot fewer records):
+
+```
+orderby: Average: 4236.882006072535, Min: 2500, Max: 5000
+sqlite: Average: 4099.7076149677805, Min: 1811.5942028985505, Max: 4807.692307692308
+```
+
+I didn't evaluate memory usage, but I'd be very surprised if the `OrderBy` method didn't use more memory than `ORDER BY`.

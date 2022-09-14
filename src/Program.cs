@@ -10,6 +10,7 @@ namespace Benchmarks
         {
             var rng = new Random();
             var db = new Database();
+            var results = new List<double>();
 
             //for (int i = 0; i < 10; i++)
             //{
@@ -17,14 +18,16 @@ namespace Benchmarks
             //}
             Insert(db, 5000);
 
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 1000; i++)
             {
-                Search(db, alphabet[rng.Next(alphabet.Length)].ToString(), 1000);
+                results.Add(Search(db, alphabet[rng.Next(alphabet.Length)].ToString(), 250));
+                Console.WriteLine($"{i}/{1000}");
             }
 
+            Console.WriteLine($"Average: {results.Average()}, Min: {results.Min()}, Max: {results.Max()}");
         }
 
-        static void Search(Database db, string term, int count)
+        static double Search(Database db, string term, int count)
         {
             var sw = new Stopwatch();
             sw.Start();
@@ -35,7 +38,9 @@ namespace Benchmarks
             }
 
             sw.Stop();
-            Console.WriteLine($"Searched {count} times in {sw.ElapsedMilliseconds}ms, {count / (sw.ElapsedMilliseconds / 1000d)}ps");
+            var result = count / (sw.ElapsedMilliseconds / 1000d);
+            Console.WriteLine($"Searched {count} times in {sw.ElapsedMilliseconds}ms, {result}ps");
+            return result;
         }
 
         static void Insert(Database db, int count)
